@@ -1,9 +1,9 @@
-var mysql = require("mysql");
+var mysql = require("mysql2");
 var inq = require("inquirer");
 var table = require("console.table");
-var add = require("./lib/add");
-var update = require("./lib/update");
-var view = require("./lib/view");
+// var add = require("./lib/add");
+// var update = require("./lib/update");
+// var view = require("./lib/view");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -16,10 +16,10 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  exports.start();
+  start();
 });
 
-exports.start = () => {
+const start = () => {
     inq.prompt([
         {
             type: "list",
@@ -35,18 +35,25 @@ exports.start = () => {
     ])
     .then(function(answer) {
       if(answer.choice === "View All Employees") {
-        view.viewAllEmployees();
+        viewAllEmployees();
       }
       else if(answer.choice === "Add Employee") {
-        add.addEmployee();
+        addEmployee();
       }      
       else if(answer.choice === "Update Employee Role") {
-        update.updateRole();
+        updateRole();
       }
       else if(answer.choice === "EXIT") {
         connection.end();
         return
       }
     });
-    
+
 };
+
+function viewAllEmployees(){
+connection.promise().query("select * from employees").then(data => {
+  console.table(data [0])
+  start();
+})
+}
